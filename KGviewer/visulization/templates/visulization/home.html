@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/kg.css' %}"></link>
+    <!-- <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}"></link> -->
+    <style>
+        body {
+            background: linear-gradient(90deg, #ffffff, #d2e0f8)
+        }
+
+        .container {
+            width: 100%;
+            height: 35rem;
+
+            float: right;
+            display: flex;
+        }
+
+        .btn_container {
+            width: 100%;
+            height: 10rem;
+            text-align: center;
+        }
+
+        .btn_container:after {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+        }
+
+        #toast-container {
+            top: 80%;
+            right: 45%;
+        }
+        .pre-scrollable {
+            max-height: 1000px;
+            height:700px;
+            overflow-y: auto;
+        }
+        .information {
+            max-height: 1000px;
+            height:350px;
+            overflow-y: scroll;
+        }
+        .hello-msg{
+            font-size: 18px;
+            color: #fff;
+            margin-right: 20px;
+          }
+        .putIn{width:100%;height:50px;padding:6px 12px;position:fixed;bottom:0;}
+        .putIn input{width:74%;float:left;background:#fff;}
+        .putIn button{width:24%;float:right;}
+        .mui-btn-danger{background:#ff0000;height:38px;border:1px solid #ff0000;}
+        input[type=text]{border:0;height:38px;margin:0;}
+        /*对话框*/
+        .chatlist{margin-top:4px;padding:12px;}
+        .chatlist p.time{margin:0;text-align: center;}
+        .chatlist p.time span{padding:0 18px;display:inline-block;font-size:9pt;color: #fff;border-radius: 2px;background-color: #dcdcdc;}
+        .chatlist .chatout,.chatlist .chatin{margin:10px 0;}
+        .chatlist .chatout{text-align:right;}
+        .chatlist .chatout img{float:right;width:40px;height:40px;border-radius:50%;margin: 0 0 0 10px;}
+        .chatlist .chatout span{display: inline-block;position:relative;padding:10px;max-width: calc(100% - 90px);min-height: 40px;line-height:20px;font-size: 13px;word-break: break-all;border-radius: 4px;background-color: #cd5360;color:#fff;}
+        .chatlist .chatout span:before{content: " ";position: absolute;top: 9px;left: 100%;border: 6px solid transparent;border-left-color: #cd5360;}
+        .chatlist .chatin img{float:left;width:40px;height:40px;border-radius:50%;margin: 0 10px 0 0;}
+        .chatlist .chatin span{display: inline-block;position:relative;padding:10px;max-width: calc(100% - 90px);min-height: 40px;line-height:20px;font-size: 13px;word-break: break-all;border-radius: 4px;text-align: left;background-color: #b37d41;color:#ffffff;}
+        .chatlist .chatin span:before{content: " ";position: absolute;top: 9px;right: 100%;border: 6px solid transparent;border-right-color: #b37d41;}
+        #inputbutton{
+            background-color: #286da8;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar " style="background-color: #438496;">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'img/logo.png' %}" width="30"alt="">
+          <span class = "hello-msg">MOVIE KG SYSTEM</span>
+        </a>
+
+      </nav>
+    <!-- <div id="container" class="container"></div> -->
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- <div class="card information" >
+                <div class="card-body">
+                    <h5 class="card-title">节点信息</h5>
+                    <p class="card-text">这里返回搜索到的答案节点的信息</p>
+                  </div>
+            </div> -->
+
+            <div class="card chatlist pre-scrollable" id = 'chartBox'>
+                
+            </div>
+            <div class="input-group mb-3">
+
+                <input type="text" class="form-control" id='chartinput' placeholder="搜索图谱">
+                <input class="btn btn-primary" id = 'inputbutton' type="button" onclick="AjaxSubmit_set();" value="Input">
+              </div>
+            </div>
+        <div class="col-md-9">
+            <div class="card" style = "height: 750px;">
+                <div id="container">
+                    <!-- <span class="card-title" style="color: #868181;">Knowlegde Graph</span> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="{% static 'js/d3.v3.min.js'%}"></script>
+    <script src="{% static 'js/jquery-3.4.1.min.js'%}"></script>
+    <script src="{% static 'js/materialize.min.js'%}"></script>
+    <script src="{% static 'js/kg.js'%}"></script>
+    <script src="{% static 'js/trans_information.js'%}"></script>
+    <script>
+        var t1_text = '{' +
+            '"1": {"name": "蝴蝶效应","type": "电影"},' +
+            '"2": { "name": "杰克·凯斯", "type": "演员"}'+
+            '}'
+        var t2_text = "[" +
+            '{ "source": 2, "target": 1, "rela": "出演", "type": "出演" }' +
+            "]"
+
+        contentHook = function(item){
+            return "<div>"+item.name+"</div>"
+        }
+        function render() {
+            try {
+                $("svg").remove()
+                var data = {}
+                console.log(t1_text)
+                data.nodes = JSON.parse(t1_text);
+                data.links = JSON.parse(t2_text);
+                var config = {
+                    //鼠标mouseover后的弹窗
+                    content:null,
+                    contentHook: contentHook,
+                    //节点配色方案（可为空)
+                    nodeColor: null,
+                    //连接线配色方案（可为空）
+                    linkColor: null,
+                    width: 1050,
+                    height: 750
+                }
+                initKG(data, config, "#container")
+            } catch (err) {
+                Materialize.toast('渲染存在异常', 2000)
+                console.info(err)
+            }
+        }
+        render();
+
+    </script>
+
+</body>
